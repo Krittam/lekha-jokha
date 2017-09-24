@@ -11,7 +11,7 @@
   <!-- Bootstrap core CSS-->  
   <link href="{% static "css/bootstrap.min.css" %}" rel="stylesheet">
   <!-- Custom fonts for this template-->
-  <link href="{% static "css/font-awesome.min.css" %}" rel="stylesheet" type="text/css">
+  <link href="{% static "css/font-awesome.min.css" %}" rel="stylesheet" type="text/css">  
   <!-- Page level plugin CSS-->
   <link href= "{% static "css/dataTables.bootstrap4.css" %}" rel="stylesheet">
   <!-- Custom styles for this template-->
@@ -63,7 +63,7 @@
     </div>
     <!-- Bootstrap core JavaScript-->
     <script src="{% static "js/jquery.min.js" %}"></script>
-    <!-- <script src="{% static "vendor/popper/popper.min.js" %}"></script> -->
+    <script src="{% static "js/popper.min.js" %}"></script>
     <script src="{% static "js/bootstrap.min.js" %}"></script>
     <!-- Core plugin JavaScript-->
     <!-- <script src="{% static "vendor/jquery-easing/jquery.easing.min.js" %}"></script> -->
@@ -77,6 +77,12 @@
     <!-- <script src="js/sb-admin-datatables.min.js"></script> -->
     <!-- <script src="js/sb-admin-charts.min.js"></script> -->
   </div>
+  
+    {% block scripts %}
+
+
+    {% endblock %}
+  
 </body>
 
 </html>

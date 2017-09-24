@@ -1,0 +1,66 @@
+{% extends "billing/_base.html" %}
+{% block content %}
+
+<div class="container-fluid">
+  <!-- Breadcrumbs-->
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item">
+      <a href="#">Dashboard</a>
+    </li>
+    <li class="breadcrumb-item active">My Dashboard</li>
+  </ol>
+  <!-- Icon Cards-->
+  <div class="row">
+    <div class="col-lg-8">
+      <div class="card mb-3">
+            <div class="card-header">
+              <i class="fa fa-pie-chart"></i> Add Client</div>
+            <div class="card-body">
+              <form action="clients" method="POST">
+              {% csrf_token %}
+                {{form.as_p}}
+                  <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+            <!-- <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div> -->
+          </div>
+      <div class="card mb-3">
+        <div class="card-header">
+          <i class="fa fa-table"></i> Data Table Example</div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Contact Person</th>
+                    <th>Address</th>                
+                  </tr>
+                </thead>              
+                <tbody>
+                  {% for client in clients %}
+                  <tr>
+                    <th>{{client.id}}</th>
+                    <th>{{client.name}}</th>
+                    <th>{{client.contact_person}}</th>
+                    <th>{{client.address}}</th>                  
+                  </tr>
+                  {% endfor %}
+                  <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Contact Person</th>
+                    <th>Address</th>                
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          
+        </div>     
+      </div>
+
+    </div>
+  </div>
+  {% endblock %}

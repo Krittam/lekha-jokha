@@ -1,4 +1,5 @@
 from django.db import models
+from datetime import datetime    
 
 from django.contrib.auth.models import User
 
@@ -29,10 +30,10 @@ class Bill (models.Model):
 class Challan (models.Model):
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
-    job = models.CharField(max_length=30, blank=False)
+    job = models.TextField(max_length=128, blank=False)
     quantity = models.IntegerField(blank=False)
-    date = models.DateField(auto_now_add=True)
+    date = models.DateField(default=datetime.now, blank=True)
     rate = models.IntegerField(null=True, blank=True)
     bill = models.ForeignKey(Bill, on_delete=models.CASCADE, null=True, blank=True)
     def __str__(self):
-        return "{}#{}#{}#{}#{}#{}".format(self.organization,self.client,self.job,self.quantity,self.rate,self.date)
+        return "{}#{}#{}#{}#{}#{}#{}".format(self.organization,self.client,self.job,self.quantity,self.rate,self.date,self.bill)
