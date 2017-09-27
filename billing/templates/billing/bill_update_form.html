@@ -1,0 +1,108 @@
+{% extends "billing/_base.html" %}
+{% block content %}
+
+<div class="container-fluid">
+  <!-- Breadcrumbs-->
+  <div class="card mb-3">
+        <div class="card-header">
+          <i class="fa fa-bar-chart"></i> Bill Details</div>
+          <div class="card-body">
+            <div class="row">                
+              <h4>{{bill.client}}</h4> <small>{{date}}</small>
+               <div class="pull-right" ><a href="{% url 'generate-bill' %}?id={{bill.id}}" class="btn btn-primary">Print</a></div>
+            </div>
+          </div>            
+        </div>
+ 
+  <!-- Icon Cards-->
+  <div class="row">
+    <div class="col-lg-12">
+
+      <div class="table-responsive">
+        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+          <thead>
+            <tr>                      
+              <th>Date</th>                      
+              <th>Job</th>
+              <th>Quantity</th>
+              <th>Rate</th>                      
+            </tr>
+          </thead>              
+          <tbody>
+            {% for challan in challans %}
+            <tr>                      
+              <th>{{challan.date}}</th>                      
+              <th>{{challan.job}}</th>
+              <th>{{challan.quantity}}</th>                      
+              <th> ₹ {{challan.rate}}</th>                                                                                      
+            </tr>
+            {% endfor %}                    
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card mb-3">
+        <div class="card-header">
+          <i class="fa fa-bar-chart"></i> Apply GST Rates</div>
+          <div class="card-body">
+            <div class="row">                
+              <form  method="POST">
+                {% csrf_token %}
+                
+                {{form.as_p}}  
+
+                <button type="submit" class="btn btn-primary">Submit</button>
+              </form>
+            </div>
+          </div>            
+        </div>               
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript">
+  $(document).ready(function() {
+    $(".apply-rate").on('click',function(){
+      var challan_id = $(this).attr('id').substr(7)
+      $(".challan-id").html(challan_id);
+      $("#input-challan-id").val(challan_id);
+      $("#rateModal").modal();    
+    });
+    $("#rateForm").submit(function(e){
+      e.preventDefault();
+      var data =$(this).serialize();
+      console.log(data)
+      $.ajax({
+        url: 'rate-challan',
+        type: 'post',
+        dataType: 'json',
+        data: data,
+        success: function(data) {
+         $(".challan-id").html();
+         $("#input-challan-id").val();
+         if (data.error == true){
+          alert (data.msg);
+          $("#rateModal").modal('toggle');    
+        }            
+        else{
+          alert ('Success');
+          $("#rateModal").modal('toggle');    
+        }
+      },
+      error: function(data){
+        $(".challan-id").html();
+        $("#input-challan-id").val();        
+        alert ('Some error occured !'+data)
+      }
+    });
+    });
+
+  });
+
+</script>
+{% endblock %}

@@ -5,8 +5,10 @@ from django.contrib.auth.models import User
 
 class Organization(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    name = models.TextField(max_length=500, blank=False)
+    name = models.CharField(max_length=50, blank=False)
     address = models.CharField(max_length=30, blank=False)
+    pan = models.CharField(max_length=10,blank=True)
+    gst_no = models.CharField(max_length=15,blank=True)    
 
     def __str__(self):
         return self.name
@@ -23,7 +25,15 @@ class Bill (models.Model):
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
     date = models.DateField(auto_now_add=True)
-    amount = models.IntegerField(blank=False)
+    cgst_rate = models.IntegerField(blank=False, default=0)
+    sgst_rate = models.IntegerField(blank=False, default=0)
+    igst_rate = models.IntegerField(blank=False, default=0)
+    @property
+    def amount(self):                
+        return sum ([ch.quantity*ch.rate for ch in self.challan_set.all()])
+    @property
+    def g_total(self):                
+        return self.amount *(1+(self.cgst_rate/100)+(self.sgst_rate/100)+(self.igst_rate/100))
     def __str__(self):
         return "{}#{}#{}#{}".format(self.organization,self.client,self.amount,self.date)
 

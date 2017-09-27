@@ -36,15 +36,17 @@
                       <th>Date</th>
                       <th>Client</th>                      
                       <th>Amount</th>                      
+                      <th>View</th>                                           
                     </tr>
                   </thead>              
                   <tbody>
                     {% for bill in bills %}
                     <tr>
-                      <th>{{bill.id}}</th>
+                      <th>{{bill.id}}</th>                      
                       <th>{{bill.date}}</th>
                       <th>{{bill.client}}</th>
-                      <th>{{bill.amount}}</th>                                                                
+                      <th> ₹{{bill.amount}}</th>
+                      <th><a href="{% url 'update-bill' pk=bill.id %}">View</a></th>                                           
                     </tr>
                     {% endfor %}
                     <tr>
@@ -52,6 +54,7 @@
                       <th>Date</th>
                       <th>Client</th>                      
                       <th>Amount</th>
+                      <th>View</th>                                           
                     </tr>
                   </tbody>
                 </table>

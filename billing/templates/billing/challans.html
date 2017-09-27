@@ -53,14 +53,14 @@
                       <th>{{challan.job}}</th>
                       <th>{{challan.quantity}}</th>
                       {% if challan.rate is not none %}
-                      <th>{{challan.rate}}</th>
+                      <th> ₹{{challan.rate}}</th>
                       {% else %}
-                      <th class="apply-rate" id="challan{{challan.id}}">Apply</th>
+                      <th class="apply-rate table-danger" style="cursor: pointer;" id="challan{{challan.id}}">Apply</th>
                       {% endif %}
                       {% if challan.bill is not none %}
                       <th>Yes</th>
                       {% else %}
-                      <th>No</th>
+                      <th class="table-warning" >No</th>
                       {% endif %}                                                          
                     </tr>
                     {% endfor %}

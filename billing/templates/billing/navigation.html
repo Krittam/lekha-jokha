@@ -6,25 +6,31 @@
     <div class="collapse navbar-collapse" id="navbarResponsive">
       <ul class="navbar-nav navbar-sidenav" id="exampleAccordion">
         <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Dashboard">
-          <a class="nav-link" href="dashboard">
+          <a class="nav-link" href="{% url 'dashboard' %}">
             <i class="fa fa-fw fa-dashboard"></i>
             <span class="nav-link-text">Dashboard</span>
           </a>
         </li>
+        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Dashboard">
+          <a class="nav-link" href="{% url 'profile' %}">
+            <i class="fa fa-fw fa-dashboard"></i>
+            <span class="nav-link-text">Profile</span>
+          </a>
+        </li>
         <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Tables">
-          <a class="nav-link" href="clients">
+          <a class="nav-link" href="{% url 'clients' %}">
             <i class="fa fa-fw fa-table"></i>
             <span class="nav-link-text">Clients</span>
           </a>
         </li>
         <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Charts">
-          <a class="nav-link" href="challan">
+          <a class="nav-link" href="{% url 'challans' %}">
             <i class="fa fa-fw fa-area-chart"></i>
             <span class="nav-link-text">Challans</span>
           </a>
         </li>
         <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Charts">
-          <a class="nav-link" href="bills">
+          <a class="nav-link" href="{% url 'bills' %}">
             <i class="fa fa-fw fa-area-chart"></i>
             <span class="nav-link-text">Bills</span>
           </a>
