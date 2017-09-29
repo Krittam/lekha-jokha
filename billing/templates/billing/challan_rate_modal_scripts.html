@@ -1,0 +1,41 @@
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $(".apply-rate").on('click',function(){
+        var challan_id = $(this).attr('id').substr(7)
+        $(".challan-id").html(challan_id);
+        $("#input-challan-id").val(challan_id);
+        $("#rateModal").modal();    
+      });
+      $("#rateForm").submit(function(e){
+        e.preventDefault();
+        var data =$(this).serialize();
+        console.log(data)
+        $.ajax({
+          url: "{% url 'rate-challan' %}",
+          type: 'post',
+          dataType: 'json',
+          data: data,
+          success: function(data) {
+           $(".challan-id").html();
+           $("#input-challan-id").val();
+           if (data.error == true){
+            alert (data.msg);
+            $("#rateModal").modal('toggle');    
+          }            
+          else{
+            alert ('Success');
+            $("#rateModal").modal('toggle');    
+          }
+        },
+        error: function(data){
+          $(".challan-id").html();
+          $("#input-challan-id").val();        
+          alert ('Some error occured !'+data)
+        }
+      });
+      });
+
+    });
+
+  </script>  

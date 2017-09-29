@@ -11,7 +11,7 @@
   </ol>
   <!-- Icon Cards-->
   <div class="row">
-    <div class="col-lg-8">
+    <div class="col-lg-12">
       <div class="card mb-3">
         <div class="card-header">
           <i class="fa fa-bar-chart"></i> Generate Pending Bills</div>
@@ -48,14 +48,7 @@
                       <th> ₹{{bill.amount}}</th>
                       <th><a href="{% url 'update-bill' pk=bill.id %}">View</a></th>                                           
                     </tr>
-                    {% endfor %}
-                    <tr>
-                      <th>ID</th>
-                      <th>Date</th>
-                      <th>Client</th>                      
-                      <th>Amount</th>
-                      <th>View</th>                                           
-                    </tr>
+                    {% endfor %}                    
                   </tbody>
                 </table>
               </div>

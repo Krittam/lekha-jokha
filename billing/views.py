@@ -190,7 +190,7 @@ class BillUpdate(UpdateView):
 
 class ClientUpdate(UpdateView):
     model = Client
-    fields = ['name','contact_person', 'address']
+    fields = ['name','contact_person', 'address','gst_no']
     template_name_suffix = '_update_form'
     def get_success_url(self):
             return reverse('update-client', kwargs={'pk': self.object.id})    
