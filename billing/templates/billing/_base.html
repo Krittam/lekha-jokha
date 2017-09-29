@@ -7,7 +7,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description" content="">
   <meta name="author" content="">
-  <title>{{organization.name | title}}</title>
+  {% if organization %}
+  <title>Lekha Jokha | {{organization.name}}</title>
+  {% else %}
+  <title>Lekha Jokha | {{organization.name}}</title>
+  {% endif %}  
   <!-- Bootstrap core CSS-->  
   <link href="{% static "css/bootstrap.min.css" %}" rel="stylesheet">
   <!-- Custom fonts for this template-->
