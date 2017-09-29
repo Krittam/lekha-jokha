@@ -1,0 +1,70 @@
+{% extends "easy_pdf/base.html" %}
+{% load static %}
+
+{% block extra_style %}
+<link href="{% static "css/botstrap.min.css" %}" rel="stylesheet">
+<style type="text/css">
+    thead,
+    table, th, td {
+     text-align: center;
+     border: 1px solid black;
+     padding-top:4px;
+ }
+ thead{
+     font-size: 4;
+ }
+
+ tr{
+     min-height: 3;
+ }
+ td.dummy-cell {
+     border: 0;
+ }
+ .header{
+     width: 100%;
+     display: inline-block;
+ }
+ .header-left{float:left;width:30%;}
+ .header-right{float:right;width:30%;}
+ .header-center{margin:0 auto;width:30%;font-size: 6;}
+ .signature {
+    font-size: 5;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="header" >
+    <div class="header-left">
+        GST No : {{organization.gst_no}}
+        PAN : {{organization.pan}}
+    </div>
+    <div class="header-center">
+        <center>{{organization.name}}</center>
+        <div><small>{{title}}</small></div>
+    </div>
+</div>
+
+
+<hr>
+    <address>
+        <strong>Billed To:</strong><br>
+        {{memo.client}}<br>
+        {{memo.client.address}}
+    </address>
+    <address>
+        <strong>Date:</strong><br>
+        {{memo.date}}<br><br>
+    </address>
+<center><strong><h3>Order Summary</h3></strong></center>
+{% block table %}
+
+{% endblock %}
+<div class="row signature" style="text-align: right; margin-top: 20px">
+ <small>For</small> {{organization.name}}
+ <br><br>
+ <small>Authorized Signatory</small> 
+
+</div>
+{% endblock %}
+

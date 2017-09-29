@@ -1,0 +1,21 @@
+{% extends "billing/memo.html" %}   
+{% block table %}
+<table class="table table-condensed-custom">
+	<thead>
+		<tr>								
+			<td class="text-center">Job</td>
+			<td class="text-center">Quantity</td>
+			<td class="text-center">Rate</td>
+			<td class="text-center">Amount</td>        							
+		</tr>
+	</thead>
+	<tbody>							
+		<tr>								
+			<td>{{job}}</td>
+			<td>{{quantity}}</td>
+			<td> {{rate}}</td>
+			<td>{{ amount }}</td>    								
+		</tr>							                            						
+	</tbody>
+</table>
+{% endblock %}

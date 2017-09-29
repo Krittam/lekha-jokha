@@ -5,9 +5,8 @@
   <!-- Breadcrumbs-->
   <ol class="breadcrumb">
     <li class="breadcrumb-item">
-      <a href="#">Dashboard</a>
-    </li>
-    <li class="breadcrumb-item active">My Dashboard</li>
+      <a href="#">All Clients</a>
+    </li>    
   </ol>
   <!-- Icon Cards-->
   <div class="row">
@@ -35,7 +34,9 @@
                     <th>ID</th>
                     <th>Name</th>
                     <th>Contact Person</th>
+                    <th>GST No</th>
                     <th>Address</th>                
+                    <th>View</th> 
                   </tr>
                 </thead>              
                 <tbody>
@@ -44,7 +45,9 @@
                     <th>{{client.id}}</th>
                     <th>{{client.name}}</th>
                     <th>{{client.contact_person}}</th>
-                    <th>{{client.address}}</th>                  
+                    <th>{{client.gst_no}}</th>
+                    <th>{{client.address}}</th> 
+                    <th><a href="{% url 'update-client' pk=client.id %}">View</a></th>                 
                   </tr>
                   {% endfor %}                  
                 </tbody>

@@ -1,17 +1,22 @@
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from billing.forms import ChallanForm, ClientForm, RateForm, OrganizationForm
 from billing.models import Client, Organization, Challan, Bill
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
+from django.core.exceptions import PermissionDenied
 from django.views.decorators.csrf import csrf_exempt
 from easy_pdf.views import PDFTemplateView
 from django.views.generic.edit import UpdateView
 from django.urls import reverse
 
-
 # Create your views here.
+def custom_context_processor(request):
+    if not request.user.is_authenticated:
+        return {}
+    return {'user':request.user,'organization':request.user.organization}
+
 @csrf_exempt
 def signup(request):
     form = UserCreationForm(request.POST or None)
@@ -31,6 +36,10 @@ def signin(request):
             login(request, form.get_user())
             return redirect('dashboard')        
     return render(request, 'billing/login.html',context={'form':form})
+
+def signout(request):
+    logout(request)
+    return redirect('login')
 
 def dashboard(request):    
     if not request.user.is_authenticated:
@@ -122,10 +131,30 @@ class InvoiceView(PDFTemplateView):
         if not bill.organization==self.request.user.organization:
             return None
         organization = bill.organization
-        context['organization'] = organization.name 
+        context['organization'] = organization
         context['pan'] = organization.pan
         context['gst_no'] = organization.gst_no
+        context['memo'] = bill
         context['bill'] = bill
+        context['title'] = 'Invoice'
+        return context
+
+class ChallanView(PDFTemplateView):    
+    template_name = 'billing/challan.html'
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super(ChallanView, self).get_context_data(**kwargs)
+        # Add in a QuerySet of all the books
+        challan = Challan.objects.get(id=self.request.GET['id'])
+        if not challan.organization==self.request.user.organization:
+            return None
+        organization = challan.organization
+        context['organization'] = organization
+        context['pan'] = organization.pan
+        context['gst_no'] = organization.gst_no
+        context['memo'] = challan
+        context['challan'] = challan
+        context['title'] = 'Challan'
         return context
 
 def invoice_test(request):
@@ -151,9 +180,25 @@ class BillUpdate(UpdateView):
     def get_success_url(self):
             return reverse('update-bill', kwargs={'pk': self.object.id})    
     def get_context_data(self, **kwargs):
+        if not self.request.user.organization == self.object.organization:
+            raise PermissionDenied()
         context = super(BillUpdate, self).get_context_data(**kwargs)
         context['bill'] = self.object        
         context['challans'] = self.object.challan_set.all()
         context['date'] = self.object.date
         return context
 
+class ClientUpdate(UpdateView):
+    model = Client
+    fields = ['name','contact_person', 'address']
+    template_name_suffix = '_update_form'
+    def get_success_url(self):
+            return reverse('update-client', kwargs={'pk': self.object.id})    
+    def get_context_data(self, **kwargs):
+        if not self.request.user.organization == self.object.organization:
+            raise PermissionDenied()
+        context = super(ClientUpdate, self).get_context_data(**kwargs)
+        context['client'] = self.object        
+        context['challans'] = self.object.challan_set.filter(bill=None)
+        context['bills'] = self.object.bill_set.all()
+        return context
