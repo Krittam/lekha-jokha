@@ -17,11 +17,22 @@
           <i class="fa fa-bar-chart"></i> Challan Form</div>
           <div class="card-body">
             <div class="row">                
-              <form action="challan" method="POST">
+              <form class="form-horizontal" action="challan" method="POST">
                 {% csrf_token %}
+                <div class="form-group">
+                {{form.as_p}}
+                </div>                
                 
-                {{form.as_p}}  
-
+                <div class="form-group row" style="text-align: center;">
+                {{ formset.management_form }}
+                {% for job in formset %}                             
+                <div class="form-vertical col-md-4">
+                {{job.as_p}}    
+                </div>
+                
+                {% endfor %}
+                </div>                
+                
                 <button type="submit" class="btn btn-primary">Submit</button>
               </form>
             </div>
@@ -36,12 +47,11 @@
                   <thead>
                     <tr>                      
                       <th>Date</th>
-                      <th>Client</th>
-                      <th>Job</th>
-                      <th>Quantity</th>
-                      <th>Rate</th>
-                      <th>Billed</th>                      
-                      <th>Print</th>
+                      <th>Client</th>                      
+                      <th>Amount</th>
+                      <th>View</th>                      
+                      <!-- <th>Print</th> -->
+                      <th>Billed</th>
                     </tr>
                   </thead>              
                   <tbody>
@@ -49,19 +59,15 @@
                     <tr>                      
                       <th>{{challan.date}}</th>
                       <th>{{challan.client}}</th>
-                      <th>{{challan.job}}</th>
-                      <th>{{challan.quantity}}</th>
-                      {% if challan.rate is not none %}
-                      <th> ₹{{challan.rate}}</th>                      
-                      {% else %}
-                      <th class="apply-rate table-danger" style="cursor: pointer;" id="challan{{challan.id}}">Apply</th>
-                      {% endif %}
+                      <th>{{challan.total}}</th>
+                      <th><a href="{% url 'update-challan' challan.id %}">View</a></th>
+                                                                
                       {% if challan.bill is not none %}
                       <th>Yes</th>
                       {% else %}
                       <th class="table-warning" >No</th>
                       {% endif %} 
-                      <th><a href="{% url 'generate-challan' %}?id={{challan.id}}">Print</a></th>                                                       
+                                                                             
                     </tr>
                     {% endfor %}                    
                   </tbody>

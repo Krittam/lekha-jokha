@@ -1,9 +1,12 @@
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
-from billing.forms import ChallanForm, ClientForm, RateForm, OrganizationForm
-from billing.models import Client, Organization, Challan, Bill
+from billing.forms import ChallanForm, ClientForm, RateForm, OrganizationForm, JobForm
+from django.views.generic import TemplateView
+from django.forms import inlineformset_factory,formset_factory
+from billing.models import Client, Organization, Challan, Bill, Job
 from django.http import JsonResponse, Http404
 from django.core.exceptions import PermissionDenied
 from django.views.decorators.csrf import csrf_exempt
@@ -62,18 +65,23 @@ def clients(request):
 def challan(request):
     if not request.user.is_authenticated:
         return redirect('login')
-
+    JobFormSet = inlineformset_factory(Challan,Job,form=JobForm,can_delete=False, exclude=('cgst_rate','sgst_rate','igst_rate'))
     form = ChallanForm(request.POST or None)
     if request.method == 'POST':    
         if form.is_valid():                    
             challan = form.save(commit=False)            
             challan.organization = request.user.organization
             challan.save()
+            formset = JobFormSet(request.POST,instance=challan)
+            if formset.is_valid():
+                formset.save()
     form.fields['client'].queryset = Client.objects.filter(organization=request.user.organization)
-    rate_form = RateForm()
-    rate_form.fields['challan'].queryset = Challan.objects.filter(organization=request.user.organization, rate=None)
+    rate_form = RateForm()    
+    jobset = JobFormSet()
+    rate_form.fields['challan'].queryset = None
+    # rate_form.fields['challan'].queryset = Challan.objects.filter(organization=request.user.organization, rate=None)
     challans = Challan.objects.filter(organization=request.user.organization)   
-    return render(request, 'billing/challans.html',context={'challans': challans,'form':form, 'rate_form':rate_form})
+    return render(request, 'billing/challans.html',context={'challans': challans,'form':form, 'rate_form':rate_form,'formset':jobset})
 
 def profile(request):
     if not request.user.is_authenticated:
@@ -121,8 +129,8 @@ def bills(request):
     bills = Bill.objects.filter(organization=request.user.organization)    
     return render(request, 'billing/bills.html',context={'bills': bills})
 
-class InvoiceView(PDFTemplateView):    
-    template_name = 'billing/invoice.html'
+class InvoiceView(TemplateView):    
+    template_name = 'billing/memo2.html'
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super(InvoiceView, self).get_context_data(**kwargs)
@@ -139,8 +147,8 @@ class InvoiceView(PDFTemplateView):
         context['title'] = 'Invoice'
         return context
 
-class ChallanView(PDFTemplateView):    
-    template_name = 'billing/challan.html'
+class ChallanView(TemplateView):    
+    template_name = 'billing/memo2.html'
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super(ChallanView, self).get_context_data(**kwargs)
@@ -153,25 +161,11 @@ class ChallanView(PDFTemplateView):
         context['pan'] = organization.pan
         context['gst_no'] = organization.gst_no
         context['memo'] = challan
+        context['jobset'] = challan.job_set.all()
         context['challan'] = challan
         context['title'] = 'Challan'
         return context
 
-def invoice_test(request):
-    if not request.user.is_authenticated:
-        return redirect('login')
-    bill = Bill.objects.get(id=request.GET['id'])
-    if not bill.organization==request.user.organization:
-        return None
-    organization = bill.organization
-    context = {}
-    context['organization'] = organization.name 
-    context['pan'] = organization.pan
-    context['gst_no'] = organization.gst_no
-    context['bill'] = bill
-    
-    bills = Bill.objects.filter(organization=request.user.organization)    
-    return render(request, 'billing/invoice.html',context=context)
 
 class BillUpdate(UpdateView):
     model = Bill
@@ -190,7 +184,8 @@ class BillUpdate(UpdateView):
 
 class ClientUpdate(UpdateView):
     model = Client
-    fields = ['name','contact_person', 'address','gst_no']
+    # fields = ['name','contact_person', 'gst_no','billing_address','shipping_address']
+    form_class=ClientForm
     template_name_suffix = '_update_form'
     def get_success_url(self):
             return reverse('update-client', kwargs={'pk': self.object.id})    
@@ -202,3 +197,44 @@ class ClientUpdate(UpdateView):
         context['challans'] = self.object.challan_set.filter(bill=None)
         context['bills'] = self.object.bill_set.all()
         return context
+
+class ChallanUpdate(UpdateView):
+    model = Challan
+    fields = ['date']
+    # form_class = JobForm
+    template_name_suffix = '_update_form'
+    
+    def get_success_url(self):
+            return reverse('update-challan', kwargs={'pk': self.object.id})    
+    def get_context_data(self, **kwargs):
+        if not self.request.user.organization == self.object.organization:
+            raise PermissionDenied()                            
+        JobFormSet = inlineformset_factory(Challan,Job,form=JobForm,can_delete=False,extra=0)    
+        context = super(ChallanUpdate, self).get_context_data(**kwargs)
+        if self.request.POST:
+            context['jobset'] = JobFormSet(self.request.POST)
+        else:            
+            context['jobset'] = JobFormSet(instance=self.object)        
+        context['challan'] = self.object 
+        return context
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if not self.request.user.organization == self.object.organization:
+            raise PermissionDenied()
+        JobFormSet = inlineformset_factory(Challan,Job,form=JobForm,can_delete=False,extra=0)
+        formset = JobFormSet(request.POST, instance=self.object)                
+        if formset.is_valid():                        
+            formset.save()
+            return HttpResponseRedirect('')
+        # return self.render_to_response(self.get_context_data(form=formset))
+        # return reverse('update-challan', kwargs={'pk': self.object.id})    
+
+    # def form_valid(self):
+    #     context = self.get_context_data()
+    #     jobset = context['jobset']        
+    #     if jobset.is_valid():
+    #         jobset.instance = self.object
+    #         jobset.save()
+
+    #     return super(ChallanUpdate, self).form_valid()

@@ -6,43 +6,42 @@
   <div class="card mb-3">
     <div class="card-header">
       <i class="fa fa-bar-chart"></i> Client Details
-      </div>
-      <div class="card-body">
-                      
-          <form  method="POST">
-                  {% csrf_token %}
+    </div>
+    <div class="card-body">
+      
+      <form  method="POST">
+        {% csrf_token %}
 
-                  {{form.as_p}}  
+        {{form.as_p}}  
 
-                  <button type="submit" class="btn btn-primary">Update</button>
-                </form>
-        
-      </div>            
-    </div>    
-    <!-- Icon Cards-->
-    <div class="row">
-      <div class="col-lg-12">
+        <button type="submit" class="btn btn-primary">Update</button>
+      </form>
+      
+    </div>            
+  </div>    
+  <!-- Icon Cards-->
+  <!-- <div class="row">
+    <div class="col-lg-12">
 
-        <div class="table-responsive">
-          <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                  <thead>
-                    <tr>                      
-                      <th>Date</th>
-                      <th>Client</th>
-                      <th>Job</th>
-                      <th>Quantity</th>
-                      <th>Rate</th>
-                      <th>Billed</th>                      
-                      <th>Print</th>
-                    </tr>
-                  </thead>              
-                  <tbody>
-                    {% for challan in challans %}
-                    <tr>                      
-                      <th>{{challan.date}}</th>
-                      <th>{{challan.client}}</th>
-                      <th>{{challan.job}}</th>
-                      <th>{{challan.quantity}}</th>
+      <div class="table-responsive">
+        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+          <thead>
+            <tr>                      
+              <th>Date</th>
+              <th>Client</th>
+              <th>Job</th>
+              <th>Quantity</th>                      
+              <th>Billed</th>                      
+              <th>Print</th>
+            </tr>
+          </thead>              
+          <tbody>
+            {% for challan in challans %}
+            <tr>                      
+              <th>{{challan.date}}</th>
+              <th>{{challan.client}}</th>
+              <th>{{challan.job}}</th>
+              <th>{{challan.quantity}}</th>
                       {% if challan.rate is not none %}
                       <th> ₹{{challan.rate}}</th>                      
                       {% else %}
@@ -58,17 +57,17 @@
                     {% endfor %}                    
                   </tbody>
                 </table>
+              </div>
+
+              
+            </div>
+          </div> -->
+
         </div>
+      <!-- </div> -->
+      <!-- {% include 'billing/challan_rate_modal.html' %} -->
+      {% endblock %}
 
-                       
-        </div>
-      </div>
-
-    </div>
-  </div>
-{% include 'billing/challan_rate_modal.html' %}
-  {% endblock %}
-
-  {% block scripts %}
-  {% include 'billing/challan_rate_modal_scripts.html' %}
-  {% endblock %}
+      {% block scripts %}
+      <!-- {% include 'billing/challan_rate_modal_scripts.html' %} -->
+      {% endblock %}

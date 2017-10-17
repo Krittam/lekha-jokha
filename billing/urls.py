@@ -1,7 +1,7 @@
 from django.conf.urls import url
 from django.views.generic import TemplateView
 from . import views
-from billing.views import InvoiceView, BillUpdate, ChallanView, ClientUpdate
+from billing.views import InvoiceView, BillUpdate, ChallanView, ClientUpdate, ChallanUpdate
 urlpatterns = [
     url(r'^$', views.signin, name='login'),
     url(r'^signup$', views.signup, name='signup'),
@@ -15,6 +15,7 @@ urlpatterns = [
     url(r'^generate-challan/$', ChallanView.as_view(),name='generate-challan'), 
 	url(r'^update-bill/(?P<pk>\d+)/$', BillUpdate.as_view(),name='update-bill'),
 	url(r'^update-client/(?P<pk>\d+)/$', ClientUpdate.as_view(),name='update-client'),
+	url(r'^update-challan/(?P<pk>\d+)/$', ChallanUpdate.as_view(),name='update-challan'),
 	url(r'^logout$', views.signout, name='logout'),
 	# url(r'^pay/summary/(?P<value>\d+)/$', views.pay_summary, name='pay_summary'))
 # url(r'^generate-bill/$', views.invoice_test, name='generate-bill'),    

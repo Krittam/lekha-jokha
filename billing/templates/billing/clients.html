@@ -12,52 +12,61 @@
   <div class="row">
     <div class="col-lg-12">
       <div class="card mb-3">
-            <div class="card-header">
-              <i class="fa fa-pie-chart"></i> Add Client</div>
-            <div class="card-body">
-              <form action="clients" method="POST">
-              {% csrf_token %}
-                {{form.as_p}}
-                  <button type="submit" class="btn btn-primary">Submit</button>
-                </form>
-            </div>
-            <!-- <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div> -->
-          </div>
-      <div class="card mb-3">
         <div class="card-header">
-          <i class="fa fa-table"></i> All Clients</div>
+          <i class="fa fa-pie-chart"></i> Add Client</div>
           <div class="card-body">
-            <div class="table-responsive">
-              <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Contact Person</th>
-                    <th>GST No</th>
-                    <th>Address</th>                
-                    <th>View</th> 
-                  </tr>
-                </thead>              
-                <tbody>
-                  {% for client in clients %}
-                  <tr>
-                    <th>{{client.id}}</th>
-                    <th>{{client.name}}</th>
-                    <th>{{client.contact_person}}</th>
-                    <th>{{client.gst_no}}</th>
-                    <th>{{client.address}}</th> 
-                    <th><a href="{% url 'update-client' pk=client.id %}">View</a></th>                 
-                  </tr>
-                  {% endfor %}                  
-                </tbody>
-              </table>
+            <div class="row">
+              
+              <form class="form-horizontal" action="clients" method="POST">
+                {% csrf_token %}                
+                <div class="form-group row">                  
+                  {% for f in form %}
+                  <div class=" col-md-4">
+                    {{f.label_tag}}<br>               
+                    {{f}}
+                  </div>
+                  {% endfor %}
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>                
+              </form>
             </div>
-          </div>
-          
-        </div>     
-      </div>
+          </div>            
+        </div>
+        <div class="card mb-3">
+          <div class="card-header">
+            <i class="fa fa-table"></i> All Clients</div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Name</th>
+                      <th>Contact Person</th>
+                      <th>GST No</th>
+                      <th>Address</th>                
+                      <th>View</th> 
+                    </tr>
+                  </thead>              
+                  <tbody>
+                    {% for client in clients %}
+                    <tr>
+                      <th>{{client.id}}</th>
+                      <th>{{client.name}}</th>
+                      <th>{{client.contact_person}}</th>
+                      <th>{{client.gst_no}}</th>
+                      <th>{{client.billing_address}}</th> 
+                      <th><a href="{% url 'update-client' pk=client.id %}">View</a></th>                 
+                    </tr>
+                    {% endfor %}                  
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            
+          </div>     
+        </div>
 
+      </div>
     </div>
-  </div>
-  {% endblock %}
+    {% endblock %}

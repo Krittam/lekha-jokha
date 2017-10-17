@@ -1,0 +1,130 @@
+{% extends "billing/_base.html" %}
+{% block content %}
+
+<div class="container-fluid">
+  <!-- Breadcrumbs-->
+  <div class="card mb-3">
+    <div class="card-header">
+      <i class="fa fa-bar-chart"></i> Challan Details
+      </div>
+      <div class="card-body">
+                      
+          <h4>{{challan.client}}</h4> <small>{{challan.date}} Amount : {{challan.total}}</small>
+          <div class="pull-right" ><a href="{% url 'generate-challan' %}?id={{challan.id}}" class="btn btn-primary">Print</a>
+          </div>
+        
+      </div>            
+    </div>
+
+    <!-- Icon Cards-->
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card mb-3">
+        <div class="card-header">
+          <i class="fa fa-bar-chart"></i> Update job details Form</div>
+          <div class="card-body">
+            <div class="row">                
+              <form class="form-horizontal"  method="POST">
+                {% csrf_token %}                                        
+                <div class="form-group row" style="text-align: center;">
+                {{ jobset.management_form }}
+                {% for job in jobset %}                             
+                <div class="form-vertical col-md-4">
+                {{job.as_p}}
+                </div>                
+                {% endfor %}
+                </div>                
+                
+                <button type="submit" class="btn btn-primary">Submit</button>
+              </form>
+            </div>
+          </div>            
+        </div>
+        <!-- <div class="table-responsive">
+          <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+            <thead>
+              <tr>                      
+                <th>Date</th>                      
+                <th>Job</th>
+                <th>Quantity</th>
+                <th>Rate</th>                      
+              </tr>
+            </thead>              
+            <tbody>
+              {% for job in challans %}
+              <tr>                      
+                <th>{{challan.date}}</th>                      
+                <th>{{challan.job}}</th>
+                <th>{{challan.quantity}}</th>                      
+                <th> ₹ {{challan.rate}}</th>                                                                                      
+              </tr>
+              {% endfor %}                    
+            </tbody>
+          </table>
+        </div> -->
+
+        <!-- <div class="card mb-3">
+          <div class="card-header">
+            <i class="fa fa-bar-chart"></i> Apply GST Rates</div>
+            <div class="card-body">
+              <div class="row">                
+                <form  method="POST">
+                  {% csrf_token %}
+
+                  {{form.as_p}}  
+
+                  <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+              </div>
+            </div>            
+          </div>  -->              
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  {% endblock %}
+
+  {% block scripts %}
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $(".apply-rate").on('click',function(){
+        var challan_id = $(this).attr('id').substr(7)
+        $(".challan-id").html(challan_id);
+        $("#input-challan-id").val(challan_id);
+        $("#rateModal").modal();    
+      });
+      $("#rateForm").submit(function(e){
+        e.preventDefault();
+        var data =$(this).serialize();
+        console.log(data)
+        $.ajax({
+          url: 'rate-challan',
+          type: 'post',
+          dataType: 'json',
+          data: data,
+          success: function(data) {
+           $(".challan-id").html();
+           $("#input-challan-id").val();
+           if (data.error == true){
+            alert (data.msg);
+            $("#rateModal").modal('toggle');    
+          }            
+          else{
+            alert ('Success');
+            $("#rateModal").modal('toggle');    
+          }
+        },
+        error: function(data){
+          $(".challan-id").html();
+          $("#input-challan-id").val();        
+          alert ('Some error occured !'+data)
+        }
+      });
+      });
+
+    });
+
+  </script>
+  {% endblock %}
