@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from billing.forms import ChallanForm, ClientForm, RateForm, OrganizationForm, JobForm
+from django.db.models.query import QuerySet
 from django.views.generic import TemplateView
 from django.forms import inlineformset_factory,formset_factory
 from billing.models import Client, Organization, Challan, Bill, Job
@@ -137,13 +138,11 @@ class InvoiceView(TemplateView):
         # Add in a QuerySet of all the books
         bill = Bill.objects.get(id=self.request.GET['id'])
         if not bill.organization==self.request.user.organization:
-            return None
-        organization = bill.organization
-        context['organization'] = organization
-        context['pan'] = organization.pan
-        context['gst_no'] = organization.gst_no
+            raise PermissionDenied()        
+        # context['pan'] = organization.pan
+        # context['gst_no'] = organization.gst_no
         context['memo'] = bill
-        context['bill'] = bill
+        context['jobset']= Job.objects.filter(challan__bill=bill)
         context['title'] = 'Invoice'
         return context
 
@@ -155,14 +154,14 @@ class ChallanView(TemplateView):
         # Add in a QuerySet of all the books
         challan = Challan.objects.get(id=self.request.GET['id'])
         if not challan.organization==self.request.user.organization:
-            return None
+            raise PermissionDenied()
         organization = challan.organization
         context['organization'] = organization
         context['pan'] = organization.pan
         context['gst_no'] = organization.gst_no
         context['memo'] = challan
         context['jobset'] = challan.job_set.all()
-        context['challan'] = challan
+        # context['challan'] = challan
         context['title'] = 'Challan'
         return context
 
@@ -200,8 +199,7 @@ class ClientUpdate(UpdateView):
 
 class ChallanUpdate(UpdateView):
     model = Challan
-    fields = ['date']
-    # form_class = JobForm
+    fields = ['date']    
     template_name_suffix = '_update_form'
     
     def get_success_url(self):
@@ -238,3 +236,19 @@ class ChallanUpdate(UpdateView):
     #         jobset.save()
 
     #     return super(ChallanUpdate, self).form_valid()
+
+def generate_client_bill(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+    client = Client.objects.get(id=request.GET['id'])        
+    if not request.user.organization == client.organization:
+            raise PermissionDenied()
+    pending_challans = Challan.objects.filter(organization=request.user.organization, client=client, bill=None)
+    client_challans = {}
+    bill = Bill(organization=client.organization,client=client)
+    for challan in pending_challans:
+        if challan.rated:
+            bill.save()
+            challan.bill = bill
+            challan.save()
+    return reverse('update-client', kwargs={'pk': client.id})            

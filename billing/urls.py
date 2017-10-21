@@ -10,6 +10,7 @@ urlpatterns = [
     url(r'^rate-challan$', views.rate_challan, name='rate-challan'),
     url(r'^clients$', views.clients, name='clients'),
     url(r'^bills$', views.bills, name='bills'),
+    url(r'^generate-pending-bills$', views.generate_client_bill, name='generate-pending-bills'),    
     url(r'^profile$', views.profile, name='profile'),
     url(r'^generate-bill/$', InvoiceView.as_view(),name='generate-bill'),    
     url(r'^generate-challan/$', ChallanView.as_view(),name='generate-challan'), 

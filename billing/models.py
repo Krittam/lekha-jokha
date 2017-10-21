@@ -43,11 +43,14 @@ class Challan (models.Model):
     @property
     def total(self):                
         return reduce(lambda x, y:x+y.total,self.job_set.all(),0)
+    @property
+    def rated(self):
+        return reduce(lambda x, y:x and y.rate,self.job_set.all(),True)
 class Job (models.Model):
     challan = models.ForeignKey(Challan, on_delete=models.CASCADE)    
     description = models.TextField(max_length=128, blank=False)
     quantity = models.IntegerField(blank=False,validators=[MinValueValidator(0)])    
-    rate = models.IntegerField(null=True, blank=True,validators=[MinValueValidator(0)])
+    rate = models.IntegerField(default=0, blank=True,validators=[MinValueValidator(0)])
     cgst_rate = models.IntegerField(blank=False, default=0,validators=[MaxValueValidator(100), MinValueValidator(0)])
     sgst_rate = models.IntegerField(blank=False, default=0,validators=[MaxValueValidator(100), MinValueValidator(0)])
     igst_rate = models.IntegerField(blank=False, default=0,validators=[MaxValueValidator(100), MinValueValidator(0)])
